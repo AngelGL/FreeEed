@@ -66,9 +66,8 @@ public class ActionProcessing implements Runnable {
     }
 
     /**
-     * @throws Exception
      */
-    public void process() throws Exception {
+    public void process() {
         Project project = Project.getCurrentProject();
 
         logger.info("Processing project: {}", project.getProjectName());

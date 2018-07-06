@@ -1,6 +1,6 @@
 /*
  *
- * Copyright SHMsoft, Inc. 
+ * Copyright SHMsoft, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- /*
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -23,6 +23,7 @@ package org.freeeed.ui;
 import org.freeeed.helpers.ProcessProgressUIHelper;
 import org.freeeed.helpers.ProgressBar;
 import org.freeeed.main.ActionProcessing;
+import org.freeeed.main.FileMessageProducer;
 import org.freeeed.services.Project;
 import org.freeeed.services.Stats;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class ProcessProgressUI extends javax.swing.JDialog implements ProcessPro
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessProgressUI.class);
     private boolean processingFinished = false;
     private long total = 1;
-    private final ActionProcessing processing;
+    private final FileMessageProducer messageProducer;
     private Thread processingThread;
 
     /**
@@ -62,7 +63,7 @@ public class ProcessProgressUI extends javax.swing.JDialog implements ProcessPro
         super(parent, modal);
         initComponents();
         myInitComponents();
-        processing = new ActionProcessing(this);
+        messageProducer = new FileMessageProducer(this);
     }
 
     @SuppressWarnings("unchecked")
@@ -167,7 +168,7 @@ public class ProcessProgressUI extends javax.swing.JDialog implements ProcessPro
         EventQueue.invokeLater(() -> {
             int confirm = JOptionPane.showConfirmDialog(null, "Please confirm cancel processing");
             if (confirm == JOptionPane.OK_OPTION) {
-                processing.setInterrupted();
+                messageProducer.setInterrupted();
                 Project.getCurrentProject().setStopThePresses(true);
                 try {
                     processingThread.join();
@@ -260,7 +261,7 @@ public class ProcessProgressUI extends javax.swing.JDialog implements ProcessPro
     public void startProcessing() {
         String projectName = Project.getCurrentProject().getProjectName();
         Stats.getInstance().setJobStarted(projectName);
-        processingThread = new Thread(processing);
+        processingThread = new Thread(messageProducer);
         processingThread.start();
     }
 
